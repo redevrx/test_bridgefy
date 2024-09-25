@@ -18,21 +18,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
@@ -105,6 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
       },
       responseData: (it) {
         /// ipad send data to client event
+        mLog.message('response data receiver: ${it.string}');
       },
       unknown: (it) {
         ///unknown event
@@ -132,7 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
     required String event,
   }) async {
     ///list current client connected
-    final peers = await bridgefyUtils.listCurrentConnectionPeers;
+    final peers = bridgefyUtils.clients;
     final toClientId = peers.firstOrNull;
 
     await bridgefyUtils.sendDataToSpecial(
@@ -165,7 +151,13 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          ///todo something
+          // startClient();
+
+
+          // sendDataToClientById(
+          //   data: 'hello world send from client',
+          //   event: BridgefyUtils.responseDataEvent,
+          // );
         },
         tooltip: 'Increment',
         child: const Icon(Icons.add),

@@ -12,7 +12,6 @@ class BridgefyUtils implements BridgefyDelegate {
   static final BridgefyUtils _instance = BridgefyUtils._();
 
   factory BridgefyUtils() {
-
     return _instance;
   }
 
@@ -117,7 +116,7 @@ class BridgefyUtils implements BridgefyDelegate {
       await initSdk();
     } catch (_) {
       mLog.message("not found session and starting");
-      if(!(await _bridgefy.isInitialized)){
+      if (!(await _bridgefy.isInitialized)) {
         await initSdk();
       }
     }
@@ -211,6 +210,8 @@ class BridgefyUtils implements BridgefyDelegate {
           uuid: request.to,
         ),
       );
+
+      mLog.message("send data complete");
     } catch (_) {
       _sendMessageProcess?.complete(false);
     }
@@ -232,7 +233,7 @@ class BridgefyUtils implements BridgefyDelegate {
     required void Function(FormData it) unknown,
   }) {
     receiverMessageEvent?.distinct().listen(
-          (event) {
+      (event) {
         switch (event.event) {
           case syncDataToIpadEvent:
             syncData(event);
@@ -335,7 +336,8 @@ class BridgefyUtils implements BridgefyDelegate {
     required String messageID,
     required int position,
     required int of,
-  }) {}
+  }) {
+  }
 
   @override
   void bridgefyDidSendMessage({required String messageID}) {
@@ -392,6 +394,15 @@ class FormData {
       to: mJson['to'] ?? '',
       event: mJson['event'] ?? '',
     );
+  }
+
+  String get string {
+    return '${{
+      'from': from,
+      'data': data,
+      'to': to,
+      'event': event,
+    }}';
   }
 
   Uint8List get toJson {

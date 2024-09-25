@@ -38,6 +38,7 @@ dependencies:
   bridgefy: ^1.1.7
   uuid: ^4.5.0
   permission_handler: ^11.3.1
+  flutter_reactive_ble: ^5.3.1
 
 dev_dependencies:
   flutter_test:
