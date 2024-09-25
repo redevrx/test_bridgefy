@@ -1,0 +1,28 @@
+PODS:
+  - bridgefy (0.0.1):
+    - Flutter
+  - Flutter (1.0.0)
+  - permission_handler_apple (9.3.0):
+    - Flutter
+
+DEPENDENCIES:
+  - bridgefy (from `.symlinks/plugins/bridgefy/ios`)
+  - Flutter (from `Flutter`)
+  - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
+
+EXTERNAL SOURCES:
+  bridgefy:
+    :path: ".symlinks/plugins/bridgefy/ios"
+  Flutter:
+    :path: Flutter
+  permission_handler_apple:
+    :path: ".symlinks/plugins/permission_handler_apple/ios"
+
+SPEC CHECKSUMS:
+  bridgefy: 1c3d44bd564734a8677e70d159b03370841a83f1
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  permission_handler_apple: 9878588469a2b0d0fc1e048d9f43605f92e6cec2
+
+PODFILE CHECKSUM: 36a6b9a6993b81ec3e2e7ef374b33bbf08de1370
+
+COCOAPODS: 1.15.2
