@@ -2,10 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-<key>NSBluetoothAlwaysUsageDescription</key>
-		<string>for comunicate and transfer data with nearby devices.</string>
-		<key>NSBluetoothPeripheralUsageDescription</key>
-        <string>แอปนี้ต้องการเข้าถึง Bluetooth เพื่อใช้งานฟีเจอร์ของอุปกรณ์</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
@@ -30,6 +26,10 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>for comunicate and transfer data with nearby devices.</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>แอปนี้ต้องการเข้าถึง Bluetooth เพื่อใช้งานฟีเจอร์ของอุปกรณ์</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bridgefy/bridgefy_utils.dart';
 import 'package:flutter_bridgefy/mlog.dart';
@@ -49,14 +51,12 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
   @override
   void initState() {
-    bridgefyUtils.initSdk().then(
-          (value) => null,
-        );
+    bridgefyUtils.initSdk().then((value) => null);
     super.initState();
+
+    scheduleMicrotask(receiverMessage);
   }
 
   @override
@@ -74,11 +74,56 @@ class _MyHomePageState extends State<MyHomePage> {
     super.didChangeDependencies();
   }
 
-  void _incrementCounter() async {
-     bridgefyUtils.initIpadServer();
-    setState(() {
-      _counter++;
-    });
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  ///
+  void startIpadServer() async {
+    await bridgefyUtils.initIpadServer();
+  }
+
+  ///start client scan
+  void startClient() async {
+    await bridgefyUtils.initClient();
+  }
+
+  ///disconnect
+  void disConnected() {
+    bridgefyUtils.release();
+  }
+
+  ///working only client
+  void clientReConnect() {
+    bridgefyUtils.reStartService();
+  }
+
+  ///receiver and check event
+  void receiverMessage() {
+    bridgefyUtils.subscriptionMessageAndEvents(
+      syncData: (it) {
+        ///sync data to ipad event
+      },
+      requestData: (it) {
+        /// request data from ipad event
+      },
+      responseData: (it) {
+        /// ipad send data to client event
+      },
+      unknown: (it) {
+        ///unknown event
+      },
+    );
+  }
+
+  ///receiver raw data without check event
+  void receiverMessageNoEvent() {
+    bridgefyUtils.receiverMessageEvent?.distinct().listen(
+      (event) {
+        ///raw message
+      },
+    );
   }
 
   @override
@@ -96,14 +141,16 @@ class _MyHomePageState extends State<MyHomePage> {
               'You have pushed the button this many times:',
             ),
             Text(
-              '$_counter',
+              '000',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: () {
+          ///todo something
+        },
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
