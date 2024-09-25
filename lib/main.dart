@@ -69,14 +69,9 @@ class _MyHomePageState extends State<MyHomePage> {
     ].request();
 
     for (var element in r.values) {
-      mLog.message("permission  name: ${element.name}:${element.isGranted}");
+      mLog.message("permission name: ${element.name}:${element.isGranted}");
     }
     super.didChangeDependencies();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 
   ///
@@ -123,6 +118,27 @@ class _MyHomePageState extends State<MyHomePage> {
       (event) {
         ///raw message
       },
+    );
+  }
+
+  ///send data to ipad server
+  void syncDataToIpadServer({required String data}) async {
+    await bridgefyUtils.sendDataToIpad(data: data);
+    mLog.message("sync data to ipad complete");
+  }
+
+  void sendDataToClientById({
+    required String data,
+    required String event,
+  }) async {
+    ///list current client connected
+    final peers = await bridgefyUtils.listCurrentConnectionPeers;
+    final toClientId = peers.firstOrNull;
+
+    await bridgefyUtils.sendDataToSpecial(
+      data: data,
+      toClientId: toClientId ?? '',
+      event: event,
     );
   }
 
