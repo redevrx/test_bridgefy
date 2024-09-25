@@ -53,22 +53,29 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
+    bridgefyUtils.initSdk().then(
+          (value) => null,
+        );
     super.initState();
   }
 
   @override
   void didChangeDependencies() async {
-   final r = await Permission.bluetooth.request();
-    await Permission.bluetoothAdvertise.request();
-    await Permission.bluetoothConnect.request();
-    await Permission.bluetoothScan.request();
+    final r = await [
+      Permission.bluetooth,
+      Permission.bluetoothAdvertise,
+      Permission.bluetoothConnect,
+      Permission.bluetoothScan
+    ].request();
 
-    mLog.message("permission :${r.isGranted}");
+    for (var element in r.values) {
+      mLog.message("permission  name: ${element.name}:${element.isGranted}");
+    }
     super.didChangeDependencies();
   }
 
   void _incrementCounter() async {
-    bridgefyUtils.initClient();
+     bridgefyUtils.initIpadServer();
     setState(() {
       _counter++;
     });
@@ -76,7 +83,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,

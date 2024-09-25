@@ -9,9 +9,10 @@ import 'mlog.dart';
 
 class BridgefyUtils implements BridgefyDelegate {
   BridgefyUtils._();
-  static final _instance = BridgefyUtils._();
+  static final BridgefyUtils _instance = BridgefyUtils._();
 
   factory BridgefyUtils() {
+
     return _instance;
   }
 
@@ -48,54 +49,85 @@ class BridgefyUtils implements BridgefyDelegate {
 
   StreamController<FormData>? _controller;
 
-  ///start init ipad server
-  void initIpadServer() async {
-    try {
+  Future<void> initSdk() async {
+    ///start init
+    isInitSdk = await _bridgefy.isInitialized;
+    if (!isInitSdk) {
+      ///start init
+      await _bridgefy.initialize(
+        apiKey: _apkKey,
+        delegate: this,
+      );
       isInitSdk = await _bridgefy.isInitialized;
-      if (!isInitSdk) {
-        ///start init
-        await _bridgefy.initialize(
-          apiKey: _apkKey,
-          delegate: this,
-        );
-      }
+    }
+  }
 
-      isInitSdk = await _bridgefy.isInitialized;
+  ///start init ipad server
+  Future<void> initIpadServer() async {
+    try {
+      await _checkHasSessionAndTerminateAndStart();
 
       ///start service
       await _bridgefy.start(userId: _ipadUUid);
       currentUserId = await _bridgefy.currentUserID;
 
       _controller ??= StreamController.broadcast();
+      isInitSdk = await _bridgefy.isInitialized;
+
+      mLog.message("current user id :$currentUserId");
     } catch (e, t) {
       mLog.error(error: e, t: t);
     }
   }
 
   ///start init client
-  void initClient() async {
-    isInitSdk = await _bridgefy.isInitialized;
-    if (!isInitSdk){
-      ///start init client
-      await _bridgefy.initialize(
-        apiKey: _apkKey,
-        delegate: this,
-      );
+  Future<void> initClient() async {
+    try {
+      await _checkHasSessionAndTerminateAndStart();
+
+      ///start service
+      await _bridgefy.start(userId: _clientUUid);
+      currentUserId = await _bridgefy.currentUserID;
+
+      _controller ??= StreamController.broadcast();
+      isInitSdk = await _bridgefy.isInitialized;
+
+      mLog.message("current user id :$currentUserId");
+    } catch (e, t) {
+      mLog.error(error: e, t: t);
     }
+  }
 
-    isInitSdk = await _bridgefy.isInitialized;
+  ///end session
+  Future<void> _checkHasSessionAndTerminate() async {
+    try {
+      await _bridgefy.destroySession();
+      isInitSdk = false;
+    } catch (_) {
+      mLog.message("not found session");
+    }
+  }
 
-    ///start service
-    await _bridgefy.start(userId: _clientUUid);
-    currentUserId = await _bridgefy.currentUserID;
+  ///end session and start
+  Future<void> _checkHasSessionAndTerminateAndStart() async {
+    try {
+      await _bridgefy.destroySession();
+      isInitSdk = false;
 
-    _controller ??= StreamController.broadcast();
+      await initSdk();
+    } catch (_) {
+      mLog.message("not found session and starting");
+      if(!(await _bridgefy.isInitialized)){
+        await initSdk();
+      }
+    }
   }
 
   ///after disconnect call this method for start service
   ///for client
   Future<void> reStartService() async {
     isInitSdk = await _bridgefy.isInitialized;
+    await _checkHasSessionAndTerminateAndStart();
 
     ///start service
     await _bridgefy.start(userId: _clientUUid);
@@ -222,21 +254,21 @@ class BridgefyUtils implements BridgefyDelegate {
   ///disconnect
   ///and clear all instance
   void release() async {
-    try {
-      ///disconnect session
-      if(isServiceStart){
-        await _bridgefy.destroySession();
-      }
-    } catch (_) {}
-
     ///clear data
     _currentUsers.clear();
     await _controller?.close();
     _controller = null;
-    isServiceStart = false;
     isInitSdk = false;
 
     await _bridgefy.stop();
+
+    try {
+      ///disconnect session
+      if (isServiceStart) {
+        await _checkHasSessionAndTerminate();
+        isServiceStart = false;
+      }
+    } catch (_) {}
   }
 
   @override
@@ -273,10 +305,14 @@ class BridgefyUtils implements BridgefyDelegate {
   void bridgefyDidFailToEstablishSecureConnection({
     required String userID,
     required BridgefyError error,
-  }) {}
+  }) {
+    mLog.error(error: error);
+  }
 
   @override
-  void bridgefyDidFailToStart({required BridgefyError error}) {}
+  void bridgefyDidFailToStart({required BridgefyError error}) {
+    mLog.error(error: error);
+  }
 
   @override
   void bridgefyDidFailToStop({required BridgefyError error}) {}
